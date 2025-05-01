@@ -12,6 +12,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
+// @Summary Добавить нового человека
+// @Description Добавляет нового человека в базу данных с автоматическим определением возраста, пола и национальности
+// @Tags people
+// @Accept json
+// @Produce json
+// @Param person body models.PeopleFromRequest true "Данные человека"
+// @Success 200 {object} models.People
+// @Failure 400 {object} map[string]string
+// @Failure 415 {object} map[string]string
+// @Failure 503 {object} map[string]string
+// @Router /people [post]
 func AddPeople(w http.ResponseWriter, r *http.Request, manager *db.Manager) {
 	log.Printf("Получен запрос на добавление нового человека")
 	var err error
@@ -54,6 +65,15 @@ func AddPeople(w http.ResponseWriter, r *http.Request, manager *db.Manager) {
 	json.NewEncoder(w).Encode(people)
 }
 
+// @Summary Удалить человека
+// @Description Удаляет человека из базы данных по ID
+// @Tags people
+// @Produce json
+// @Param id path int true "ID человека"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /people/{id} [delete]
 func DeletePeople(w http.ResponseWriter, r *http.Request, manager *db.Manager) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])

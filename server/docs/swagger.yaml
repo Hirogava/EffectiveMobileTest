@@ -1,0 +1,256 @@
+basePath: /api
+definitions:
+  models.Country:
+    description: Модель данных о стране с вероятностью
+    properties:
+      country_id:
+        example: RU
+        type: string
+      probability:
+        example: 0.95
+        type: number
+    type: object
+  models.People:
+    description: Полная модель данных о человеке, включая автоматически определенные
+      данные
+    properties:
+      age:
+        example: 30
+        type: integer
+      countries:
+        items:
+          $ref: '#/definitions/models.Country'
+        type: array
+      gender:
+        example: male
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Ivan
+        type: string
+      patronymic:
+        example: Ivanovich
+        type: string
+      surname:
+        example: Ivanov
+        type: string
+    type: object
+  models.PeopleFromRequest:
+    description: Модель для создания или обновления данных о человеке
+    properties:
+      name:
+        example: Ivan
+        type: string
+      patronymic:
+        example: Ivanovich
+        type: string
+      surname:
+        example: Ivanov
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API для управления данными о людях
+  title: Effective Mobile API
+  version: "1.0"
+paths:
+  /people:
+    get:
+      description: Возвращает список людей с возможностью фильтрации по возрасту,
+        полу и стране
+      parameters:
+      - description: Минимальный возраст
+        in: query
+        name: age_from
+        type: integer
+      - description: Максимальный возраст
+        in: query
+        name: age_to
+        type: integer
+      - description: Пол (male/female)
+        in: query
+        name: gender
+        type: string
+      - description: Код страны
+        in: query
+        name: country
+        type: string
+      - default: 1
+        description: Номер страницы
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Количество записей на странице
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить список людей
+      tags:
+      - people
+    post:
+      consumes:
+      - application/json
+      description: Добавляет нового человека в базу данных с автоматическим определением
+        возраста, пола и национальности
+      parameters:
+      - description: Данные человека
+        in: body
+        name: person
+        required: true
+        schema:
+          $ref: '#/definitions/models.PeopleFromRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.People'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "415":
+          description: Unsupported Media Type
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Добавить нового человека
+      tags:
+      - people
+  /people/{id}:
+    delete:
+      description: Удаляет человека из базы данных по ID
+      parameters:
+      - description: ID человека
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Удалить человека
+      tags:
+      - people
+    get:
+      description: Возвращает полные данные о человеке по ID
+      parameters:
+      - description: ID человека
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.People'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Получить данные о человеке
+      tags:
+      - people
+    put:
+      consumes:
+      - application/json
+      description: Обновляет данные о человеке. При изменении имени автоматически
+        обновляет возраст, пол и национальность
+      parameters:
+      - description: ID человека
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Новые данные человека
+        in: body
+        name: person
+        required: true
+        schema:
+          $ref: '#/definitions/models.PeopleFromRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.People'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Обновить данные человека
+      tags:
+      - people
+swagger: "2.0"
