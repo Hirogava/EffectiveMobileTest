@@ -20,6 +20,10 @@ func ApiRoutes(r *mux.Router, manager *db.Manager) {
 	}).Methods(http.MethodPost)
 
 	apiRout.HandleFunc("/people/{id}", func(w http.ResponseWriter, r *http.Request) {
+		api.GetPeople(w, r, manager)
+	}).Methods(http.MethodGet)
+
+	apiRout.HandleFunc("/people/{id}", func(w http.ResponseWriter, r *http.Request) {
 		api.DeletePeople(w, r, manager)
 	}).Methods(http.MethodDelete)
 
@@ -28,6 +32,6 @@ func ApiRoutes(r *mux.Router, manager *db.Manager) {
 	}).Methods(http.MethodPut)
 
 	apiRout.HandleFunc("/people", func(w http.ResponseWriter, r *http.Request) {
-		api.GetPeople(w, r, manager)
+		api.GetAllPeople(w, r, manager)
 	}).Methods(http.MethodGet)
 }
